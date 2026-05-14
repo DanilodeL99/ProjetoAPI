@@ -9,7 +9,7 @@ function App() {
     <div>
       {/* O menu fora do <Routes> aparece em TODAS as páginas */}
       <nav className="navbar">
-        <h2>Portal Otaku</h2>
+        <h2>Moe Moe Kyuuun</h2>
         <div className="links">
           <Link to="/">Início</Link>
           <Link to="/busca">Buscar Cena</Link>

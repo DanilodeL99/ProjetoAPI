@@ -4,82 +4,76 @@ import './style.css';
 function Quiz() {
     const [opcoes, setOpcoes] = useState([]);
     const [animeCorreto, setAnimeCorreto] = useState(null); 
-    const [desfoque, setDesfoque] = useState(25); 
-    const [mensagem, setMensagem] = useState("Carregando desafio...");
+    const [desfoque, setDesfoque] = useState(15); 
+    const [mensagem, setMensagem] = useState("Carregando...");
 
-
-    const iniciarJogo = () => {
-        setMensagem("Buscando animes...");
-        setDesfoque(25); 
-
-        const pagina = Math.floor(Math.random() * 5) + 1;
-        const uri = `https://api.jikan.moe/v4/top/anime?limit=5&page=${pagina}`;
-
-        fetch(uri)
-            .then(res => res.json())
-            .then(json => {
-                const animes = json.data;
-                setOpcoes(animes);
-                
+    function buscarNovosAnimes() {
+        setMensagem("Sorteando animes...");
+        setDesfoque(15);
+        
        
-                const sorteado = animes[Math.floor(Math.random() * animes.length)];
-                setAnimeCorreto(sorteado);
-                setMensagem("Qual é o anime desta imagem?");
-            })
-            .catch(() => alert('Erro ao carregar a Jikan API.'));
-    };
+        const pag = Math.floor(Math.random() * 10) + 1;
+        const url = `https://api.jikan.moe/v4/top/anime?limit=20&page=${pag}`;
 
-   
+        fetch(url)
+            .then(resposta => resposta.json())
+            .then(dados => {
+                const lista = dados.data;
+              
+                const embaralhados = lista.sort(() => 0.5 - Math.random()).slice(0, 4);
+                
+                setOpcoes(embaralhados);
+                
+                const escolhido = embaralhados[Math.floor(Math.random() * embaralhados.length)];
+                setAnimeCorreto(escolhido);
+                setMensagem("Quem é esse neguinho?");
+            })
+            .catch(() => setMensagem("Erro ao conectar com a API. Tente novamente."));
+    }
+
     useEffect(() => {
-        iniciarJogo();
+        buscarNovosAnimes();
     }, []);
 
-
-    const responder = (idEscolhido) => {
-        if (idEscolhido === animeCorreto.mal_id) {
-            setMensagem("ACERTOU MIZERAVI, este é o " + animeCorreto.title);
-            setDesfoque(0); 
+    function conferirResposta(id) {
+        if (id === animeCorreto.mal_id) {
+            setMensagem("NICE TRY MY BESTO FRIENDO");
+            setDesfoque(0);
+          
+            setTimeout(() => {
+                buscarNovosAnimes();
+            }, 2000);
         } else {
-            setMensagem("ERROU VACILÃO, a imagem ficou mais nítida...");
-            if (desfoque > 0) {
-                setDesfoque(desfoque - 8); 
-            }
+            setMensagem("Errou, desista dos seu sonhos e morra");
+            if (desfoque > 0) setDesfoque(desfoque - 4);
         }
-    };
+    }
 
     return (
         <div className="container">
-            <h1>Quiz: Adivinhe o Anime</h1>
-            <h3>{mensagem}</h3>
+            <h1 style={{color: '#61dafb'}}>Desafio</h1>
+            <p className="status-msg">{mensagem}</p>
 
             {animeCorreto && (
-                <div style={{ margin: '20px 0' }}>
+                <div className="moldura-imagem">
                     <img 
                         src={animeCorreto.images.jpg.large_image_url} 
-                        alt="Adivinhe o anime" 
-                    
-                        style={{ filter: `blur(${desfoque}px)`, width: '300px', height: '400px', objectFit: 'cover', borderRadius: '10px' }} 
+                        style={{ filter: `blur(${desfoque}px)` }}
+                        alt="Desafio"
                     />
                 </div>
             )}
 
-            <div className="botoes-quiz">
-                {opcoes.map((anime) => (
-                    <button 
-                        key={anime.mal_id} 
-                        onClick={() => responder(anime.mal_id)}
-                        style={{ margin: '5px', padding: '10px', cursor: 'pointer' }}
-                    >
+            <div className="grade-respostas">
+                {opcoes.map(anime => (
+                    <button key={anime.mal_id} onClick={() => conferirResposta(anime.mal_id)}>
                         {anime.title}
                     </button>
                 ))}
             </div>
 
-            <button 
-                onClick={iniciarJogo} 
-                style={{ marginTop: '30px', padding: '10px 20px', backgroundColor: '#e74c3c', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-            >
-                Pular / Jogar Novamente
+            <button className="btn-pular" onClick={buscarNovosAnimes}>
+                Pular Desafio
             </button>
         </div>
     );

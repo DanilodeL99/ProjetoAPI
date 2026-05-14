@@ -1,7 +1,7 @@
 function Home() {
     return (
-        <div className="container"> /* Professora me perdoe mas aqui eu tive que usar IA, não sabia o que colocar na pagina de Home e ficou meio Cringe Gomenasai sensei 🙏🙇‍♂️ */
-            <h1>Bem-vindo ao Portal Otaku</h1>
+        <div className="container"> 
+            <h1>Bem-vindo ao Moe Kyuuun</h1>
 
             <p>
                 Este projeto consome duas APIs incríveis para testar seus
